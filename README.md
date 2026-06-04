@@ -43,4 +43,4 @@ Here are a few features planned for upcoming updates:
 - [ ] 🔀 **Custom Difficulty:** Options to switch between 4-letter, 5-letter, and 6-letter secret word pools.
 
 ---
-Created with ❤️ by [Celine0921](https://github.com/s251122-cloud) 
+Created by [Celine0921](https://github.com/s251122-cloud) 
