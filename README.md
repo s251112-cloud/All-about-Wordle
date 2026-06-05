@@ -45,6 +45,14 @@ In the game Wordle, many of the starting words are really popular due to the let
 
 ---
 
+## ✨ Changelog
+
+We (Celine & Marco) have made some changes in our game engine, including:
+
+<img width="776" height="591" alt="Screenshot 2026-06-05 at 17 02 25" src="https://github.com/user-attachments/assets/0010eaa5-7f1b-42ee-9375-d87d05c9cb61" />
+
+* 5 Jun 2026: Fixed duplicate letter bug, ie to count the letter occurrences correctly to colour the tiles properly and flawlessly.
+  
 ## 🔮 Future Roadmap
 
 Here are a few features planned for upcoming updates:
