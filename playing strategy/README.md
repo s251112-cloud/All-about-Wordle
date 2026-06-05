@@ -3,7 +3,7 @@
 To consistently solve the puzzle within the six-try limit, players can utilize phonetic frequency and strategic elimination tracking.
 
 ### 🎯 A. The Optimal Starting Words
-Statistically, the best starting words contain a high concentration of common English vowels ($A, E, O$) and top-tier consonants ($R, S, T$). 
+Statistically, the best starting words contain a high concentration of common English vowels (A, E, O) and top-tier consonants (R, S, T). 
 *   **CRANE / SLATE:** Highly recommended by computer algorithms to eliminate common layout structures early.
     *   *Example:* The girl always inputs **CRANE** as her opening word to quickly find the vowels.
 
