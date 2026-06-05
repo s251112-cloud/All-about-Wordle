@@ -52,6 +52,9 @@ We (Celine & Marco) have made some changes in our game engine, including:
 <img width="776" height="591" alt="Screenshot 2026-06-05 at 17 02 25" src="https://github.com/user-attachments/assets/0010eaa5-7f1b-42ee-9375-d87d05c9cb61" />
 
 * 5 Jun 2026: Fixed duplicate letter bug, ie to count the letter occurrences correctly to colour the tiles properly and flawlessly.
+
+<img width="973" height="699" alt="Screenshot 2026-06-05 at 17 08 01" src="https://github.com/user-attachments/assets/daac94c8-a105-427b-9a3b-b58fe49ad987" />
+* 5 Jun 2026: Added a Wordle solver engine.
   
 ## 🔮 Future Roadmap
 
