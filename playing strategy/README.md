@@ -1,6 +1,6 @@
 ## 🧠 6. Wordle Strategy & Statistical Insights
 
-To consistently solve the puzzle within the six-try limit, players can utilise phonetic frequency and strategic elimination tracking.
+To consistently solve the puzzle within the six-try limit, players can utilize phonetic frequency and strategic elimination tracking.
 
 ### 🎯 A. The Optimal Starting Words
 Statistically, the best starting words contain a high concentration of common English vowels (A, E, O) and top-tier consonants (R, S, T). 
