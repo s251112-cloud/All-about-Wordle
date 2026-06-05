@@ -1,0 +1,170 @@
+/* --- WORDLE MASTER LEADERBOARD THEME SYSTEM --- */
+
+:root {
+    /* --- MASTER THEME PALETTE --- */
+    --primary-mint: #6ca965;
+    --header-dark: #538d4e;
+    --accent-light: #e8f5e9;
+    
+    /* --- OFFICIAL WORDLE STATE COLORS --- */
+    --wordle-correct: #6ca965;  /* Green */
+    --wordle-present: #c9b458;  /* Yellow */
+    --wordle-absent: #787c7e;   /* Dark Gray */
+    
+    /* --- INTERFACE CORE SETUP --- */
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --border-gray: #e2e8f0;
+}
+
+/* --- MASTER LAYOUT CONSTRAINTS --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- HEADER BANNER DESIGN --- */
+header.theme-purple {
+    text-align: center;
+    padding: 40px 15px;
+    background: linear-gradient(135deg, var(--header-dark), var(--primary-mint));
+    color: white;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+h1 { 
+    margin: 0; 
+    font-size: 2.5rem; 
+}
+
+p.subtitle { 
+    margin: 10px 0 0 0; 
+    opacity: 0.9; 
+    font-size: 1.1rem; 
+}
+
+/* --- STRUCTURED CARD DISPLAYS --- */
+.card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-gray);
+}
+
+h2 { 
+    color: var(--header-dark); 
+    border-bottom: 2px solid var(--accent-light);
+    margin-top: 0;
+    padding-bottom: 10px;
+    font-size: 1.6rem;
+}
+
+.word-info h3 {
+    margin: 0 0 8px 0 !important;
+    font-size: 1.4rem !important;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* --- THE LEADERBOARD SYSTEM --- */
+.leaderboard-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-gray);
+    transition: transform 0.2s ease;
+}
+
+.leaderboard-row:hover {
+    transform: translateX(4px);
+}
+
+/* Position-Specific Background Enhancements */
+.champion-box {
+    background-color: #f0fdf4; /* Light green highlight for 1st place */
+    border-left: 6px solid var(--wordle-correct);
+}
+
+.runner-up-box {
+    background-color: #fafafa;
+    border-left: 6px solid #94a3b8;
+}
+
+.standard-rank {
+    background-color: #ffffff;
+    padding: 14px 20px;
+    border-left: 4px solid var(--border-gray);
+}
+
+.rank-badge {
+    font-weight: bold;
+    font-size: 1rem;
+    min-width: 140px;
+    color: #475569;
+}
+
+/* --- WORDLE GRAPHICAL ALIGNMENT --- */
+.wordle-grid {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.letter-box {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+/* State Management Selectors */
+.letter-box.correct { 
+    background-color: var(--wordle-correct); 
+    border-color: var(--wordle-correct); 
+}
+.letter-box.present { 
+    background-color: var(--wordle-present); 
+    border-color: var(--wordle-present); 
+}
+.letter-box.absent  { 
+    background-color: var(--wordle-absent);  
+    border-color: var(--wordle-absent); 
+}
+
+/* --- TYPOGRAPHY DETAILS --- */
+.example-text {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-top: 8px;
+}
+
+/* --- GLOBAL FOOTER CONFIGURATION --- */
+footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #64748b;
+    font-size: 0.9rem;
+}
