@@ -1,14 +1,14 @@
 /* --- WORDLE PROJECT STYLES --- */
 
 :root {
-    /* --- THEME COLORS (WORDLE GREEN) --- */
+    /* --- THEME COLOURS (WORDLE GREEN) --- */
     --wordle-green: #6aaa64;
     --wordle-correct: #538d4e;
     --wordle-present: #c9b458;
     --wordle-absent: #787c7e;
     --bg-mint-light: #f0fdf4;
     
-    /* --- GLOBAL LAYOUT COLORS --- */
+    /* --- GLOBAL LAYOUT COLOURS --- */
     --bg-page: #f8fafc;
     --bg-card: #ffffff;
     --text-main: #1e293b;
@@ -17,7 +17,7 @@
 
 /* --- GLOBAL BODY & CONTAINER SETTINGS --- */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "Campton", "Whitney", "NYTFranklin", "Clear Sans", "Helvetica Neue", "Arial", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-page);
     color: var(--text-main);
     line-height: 1.6;
