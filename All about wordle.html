@@ -16,7 +16,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: "Campton", "NYTFranklin", "Clear Sans", "Noto Sans", "Arial", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text);
             line-height: 1.6;
@@ -180,8 +180,8 @@
 
     <!-- SECTION 2: HOW TO PLAY -->
     <div class="card">
-        <h2>2. How to Read the Colors</h2>
-        <p>Every time you make a guess, the color of the tiles changes to show you how close you are:</p>
+        <h2>2. How to Read the Colours</h2>
+        <p>Every time you make a guess, the colour of the tiles changes to show you how close you are:</p>
         
         <div class="color-example">
             <div class="mini-tile c-green">W</div>
@@ -203,15 +203,15 @@
     <div class="card">
         <h2>3. Best Pro-Strategies</h2>
         <ul>
-            <li><strong>Pick a Strong Starter Word:</strong> Use words packed with vowels and common letters (like <em>ADIEU, STARE, AUDIO,</em> or <em>CRANE</em>).</li>
-            <li><strong>Don't Re-use Gray Letters:</strong> If a letter turns gray, avoid putting it in your next guesses to unlock missing hints!</li>
+            <li><strong>Pick a Strong Starter Word:</strong> Use words packed with vowels and common letters (like <em>SLATE, STARE, TRACE,</em> or <em>CRANE</em>).</li>
+            <li><strong>Don't Reuse Gray Letters:</strong> If a letter turns grey, avoid putting it in your next guesses to unlock missing hints!</li>
         </ul>
     </div>
 
     <!-- SECTION 4: LIVE INTERACTIVE MINI-GAME -->
     <div class="card">
         <h2>4. Try the Mini-Wordle Game!</h2>
-        <p>Type a 5-letter guess below and press Enter to test your vocabulary skills right now!</p>
+        <p>Type a 5-letter guess below and press "Enter" to test your vocabulary skills right now!</p>
         
         <div class="game-area">
             <div id="message"></div>
@@ -224,14 +224,14 @@
     </div>
 
     <footer>
-        <p>Created by Celine | Powered by GitHub Pages</p>
+        <p>Created by Celine & Marco | Powered by GitHub Pages</p>
     </footer>
 
 </div>
 
 <script>
     // Hidden word pool for the mini game
-    const SECRETS = ["words", "games", "logic", "codes", "smart"];
+    const SECRETS = ["words", "games", "logic", "codes", "smart", "apple", "board", "green", "white", "glass", "place", "black", "found", "light", "dance", "plays", "given", "print", "false", "trace"];
     const TARGET_WORD = SECRETS[Math.floor(Math.random() * SECRETS.length)];
     let attempts = 0;
     const maxAttempts = 6;
