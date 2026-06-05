@@ -172,17 +172,15 @@
         <p class="subtitle">The Ultimate Word Game Hub 🟩🟨⬛</p>
     </header>
 
-    <!-- SECTION 1: WHAT IS WORDLE -->
     <div class="card">
         <h2>1. What is Wordle?</h2>
         <p>Wordle is a popular web-based word puzzle game created by programmer Josh Wardle. Players have <strong>six attempts</strong> to guess a secret 5-letter word. It's a brilliant mix of logic, language skills, and daily problem-solving!</p>
     </div>
 
-    <!-- SECTION 2: HOW TO PLAY -->
     <div class="card">
         <h2>2. How to Read the Colours</h2>
         <p>Every time you make a guess, the colour of the tiles changes to show you how close you are:</p>
-        
+         
         <div class="color-example">
             <div class="mini-tile c-green">W</div>
             <div><strong>Green:</strong> The letter is correct and in the **exact right spot**!</div>
@@ -199,7 +197,6 @@
         </div>
     </div>
 
-    <!-- SECTION 3: TOP STRATEGIES -->
     <div class="card">
         <h2>3. Best Pro-Strategies</h2>
         <ul>
@@ -208,11 +205,10 @@
         </ul>
     </div>
 
-    <!-- SECTION 4: LIVE INTERACTIVE MINI-GAME -->
     <div class="card">
         <h2>4. Try the Mini-Wordle Game!</h2>
         <p>Type a 5-letter guess below and press "Enter" to test your vocabulary skills right now!</p>
-        
+         
         <div class="game-area">
             <div id="message"></div>
             <div id="grid"></div>
@@ -264,17 +260,43 @@
         let rows = document.getElementsByClassName("row");
         let tiles = rows[attempts].children;
 
-        // Apply colors
+        // --- NEW WORDLE LETTER VALIDATION SYSTEM ---
+        
+        // Track the count of letters available in the TARGET_WORD
+        let targetLetterCounts = {};
+        for (let letter of TARGET_WORD) {
+            targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1;
+        }
+
+        // Initialize an array to store tile states ('absent' by default)
+        let tileStatuses = Array(5).fill("absent");
+
+        // First Pass: Identify all exact matches (Green)
         for (let i = 0; i < 5; i++) {
             tiles[i].textContent = guess[i];
             if (guess[i] === TARGET_WORD[i]) {
-                tiles[i].classList.add("correct");
-            } else if (TARGET_WORD.includes(guess[i])) {
-                tiles[i].classList.add("present");
-            } else {
-                tiles[i].classList.add("absent");
+                tileStatuses[i] = "correct";
+                targetLetterCounts[guess[i]]--; // Consume the letter count
             }
         }
+
+        // Second Pass: Identify partial matches (Yellow) or remaining mismatches (Gray)
+        for (let i = 0; i < 5; i++) {
+            // Only evaluate tiles that weren't already marked correct
+            if (tileStatuses[i] !== "correct") {
+                if (targetLetterCounts[guess[i]] > 0) {
+                    tileStatuses[i] = "present";
+                    targetLetterCounts[guess[i]]--; // Consume the letter count
+                }
+            }
+        }
+
+        // Apply final CSS classes based on the evaluated statuses
+        for (let i = 0; i < 5; i++) {
+            tiles[i].classList.add(tileStatuses[i]);
+        }
+        
+        // --- END OF VALIDATION SYSTEM ---
 
         if (guess === TARGET_WORD) {
             msg.textContent = "🎉 You got it! Amazing job!";
