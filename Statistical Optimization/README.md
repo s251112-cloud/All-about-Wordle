@@ -70,4 +70,5 @@ Any revealed hints *must* be used in all subsequent guesses. If you get a green 
 ---
 
 ### 🚀 Contributors
-*   **Celine0921** (@s251112-cloud)
+*   **Celine0921** (the main creator of this project)
+*   **marcoT0425** (the collab of the project)
