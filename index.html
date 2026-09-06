@@ -3,56 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wordle Solver Engine - SALET First</title>
+  <title>Wordle Solver Engine</title>
   <style>
+    :root {
+      --bg-color: #121213;
+      --card-bg: #1a1a1b;
+      --border-color: #3a3a3c;
+      --text-main: #ffffff;
+      --text-muted: #818384;
+      --green: #538d4e;
+      --yellow: #b59f3b;
+      --gray: #3a3a3c;
+      --accent: #ffaa00;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
       font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
-      background-color: #121213;
-      color: #ffffff;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      padding: 15px;
+      padding: 20px 10px;
     }
 
-    header { text-align: center; margin-bottom: 20px; }
-    h1 { font-size: 2.2rem; letter-spacing: 2px; color: #538d4e; }
-    p.subtitle { font-size: 0.95rem; color: #aaa; margin-top: 4px; }
+    header { text-align: center; margin-bottom: 24px; }
+    h1 { font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    p.subtitle { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Solver Output Box */
-    #recommendation-card {
-      background: #272729;
-      border: 1px solid #3a3a3c;
-      border-radius: 8px;
-      padding: 15px 25px;
-      text-align: center;
-      margin-bottom: 20px;
+    /* Layout Wrapper */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
     }
-    .rec-label { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
-    .rec-word { font-size: 2.5rem; font-weight: bold; color: #ffaa00; letter-spacing: 4px; margin: 5px 0; }
-    .rec-stats { font-size: 0.85rem; color: #d7dedc; }
 
-    /* Board Grid */
-    #board {
-      display: grid;
-      grid-template-rows: repeat(6, 1fr);
-      grid-gap: 6px;
-      margin-bottom: 20px;
+    /* Recommendation Banner */
+    .recommendation-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      width: 100%;
+      text-align: center;
     }
+
+    .rec-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+    }
+
+    .rec-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 6px;
+      color: var(--accent);
+      margin: 6px 0;
+    }
+
+    .rec-meta {
+      font-size: 0.8rem;
+      color: #d7dedc;
+    }
+
+    /* Grid Layout */
+    .board {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
     .row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-gap: 6px;
+      display: flex;
+      gap: 6px;
     }
+
     .tile {
-      width: 52px;
-      height: 52px;
-      border: 2px solid #3a3a3c;
+      width: 58px;
+      height: 58px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -61,53 +99,93 @@
       text-transform: uppercase;
       user-select: none;
       cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
     }
 
-    /* Color Feedback States */
-    .absent { background-color: #3a3a3c; border-color: #3a3a3c; color: white; }
-    .present { background-color: #b59f3b; border-color: #b59f3b; color: white; }
-    .correct { background-color: #538d4e; border-color: #538d4e; color: white; }
+    .tile:hover { transform: scale(1.02); }
 
-    /* Controls */
-    .controls { display: flex; gap: 10px; margin-top: 10px; }
+    /* Tile States */
+    .tile.absent { background-color: var(--gray); border-color: var(--gray); color: #fff; }
+    .tile.present { background-color: var(--yellow); border-color: var(--yellow); color: #fff; }
+    .tile.correct { background-color: var(--green); border-color: var(--green); color: #fff; }
+
+    /* Instructions / Legend */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.gray { background-color: var(--gray); }
+    .dot.yellow { background-color: var(--yellow); }
+    .dot.green { background-color: var(--green); }
+
+    /* Action Controls */
+    .actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
     button {
-      padding: 12px 20px;
-      font-size: 0.95rem;
+      flex: 1;
+      padding: 14px;
+      font-size: 0.9rem;
       font-weight: bold;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: opacity 0.2s ease;
     }
-    #submit-btn { background-color: #538d4e; color: white; }
-    #submit-btn:hover { background-color: #467641; }
-    #reset-btn { background-color: #818384; color: white; }
-    #reset-btn:hover { background-color: #6e7071; }
+
+    button:hover { opacity: 0.9; }
+
+    .btn-primary { background-color: var(--green); color: white; }
+    .btn-secondary { background-color: var(--gray); color: white; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>WORDLE SOLVER ENGINE</h1>
-    <p class="subtitle">Click tiles to set feedback colors (Gray ➔ Yellow ➔ Green)</p>
+    <h1>Wordle Solver Engine</h1>
+    <p class="subtitle">Click any letter tile to cycle its feedback color</p>
   </header>
 
-  <div id="recommendation-card">
-    <div class="rec-label">Recommended Guess (Turn <span id="turn-num">1</span>)</div>
-    <div class="rec-word" id="best-word">SALET</div>
-    <div class="rec-stats" id="stats-text">Initial Optimal Opening Word (~4.88 Bits)</div>
-  </div>
+  <div class="app-container">
+    
+    <!-- Top Recommendation Display -->
+    <div class="recommendation-card">
+      <div class="rec-header">Suggested Guess (Turn <span id="turn-num">1</span>)</div>
+      <div class="rec-word" id="best-word">SALET</div>
+      <div class="rec-meta" id="stats-text">Default Opening Word (~4.88 Bits)</div>
+    </div>
 
-  <div id="board"></div>
+    <!-- 6x5 Grid -->
+    <div class="board" id="board"></div>
 
-  <div class="controls">
-    <button id="submit-btn" onclick="processCurrentTurn()">Calculate Next Guess</button>
-    <button id="reset-btn" onclick="resetSolver()">Reset Solver</button>
+    <!-- Visual Legend -->
+    <div class="legend">
+      <div class="legend-item"><span class="dot gray"></span> Gray (Absent)</div>
+      <div class="legend-item"><span class="dot yellow"></span> Yellow (Wrong Spot)</div>
+      <div class="legend-item"><span class="dot green"></span> Green (Correct Spot)</div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="actions">
+      <button class="btn-primary" onclick="processTurn()">Next Guess</button>
+      <button class="btn-secondary" onclick="resetSolver()">Reset</button>
+    </div>
+
   </div>
 
   <script>
-    // Dictionary Pool
     const DICTIONARY = [
       "SALET", "CRANE", "STALE", "LEASE", "CLASS", "BILLY", "SPITS", "GLASS", "LOGIC", "SMART",
       "CLOUD", "GRAIN", "PLANT", "SHARK", "TRAIN", "FLASH", "PRIME", "STAGE", "REACT", "TRACE",
@@ -116,28 +194,32 @@
     ];
 
     const DEFAULT_STARTING_WORD = "SALET";
-    let possibleCandidates = [...DICTIONARY];
+    let candidates = [...DICTIONARY];
     let currentTurn = 0;
-    let boardState = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
+    
+    // Grid State Initialization
+    let boardData = Array(6).fill(null).map(() => 
+      Array(5).fill({ char: '', state: 'absent' })
+    );
 
     const boardEl = document.getElementById("board");
     const bestWordEl = document.getElementById("best-word");
     const statsTextEl = document.getElementById("stats-text");
     const turnNumEl = document.getElementById("turn-num");
 
-    function renderBoard() {
+    function render() {
       boardEl.innerHTML = "";
       for (let r = 0; r < 6; r++) {
         const row = document.createElement("div");
         row.className = "row";
         for (let c = 0; c < 5; c++) {
           const tile = document.createElement("div");
-          tile.className = `tile ${boardState[r][c].state}`;
-          tile.textContent = boardState[r][c].char;
+          tile.className = `tile ${boardData[r][c].state}`;
+          tile.textContent = boardData[r][c].char;
 
-          // Toggle feedback color on click for active row
-          if (r === currentTurn && boardState[r][c].char !== '') {
-            tile.onclick = () => toggleTileState(r, c);
+          // Only allow changing feedback on active rows containing letters
+          if (r === currentTurn && boardData[r][c].char !== '') {
+            tile.onclick = () => cycleState(r, c);
           }
 
           row.appendChild(tile);
@@ -146,99 +228,85 @@
       }
     }
 
-    function toggleTileState(row, col) {
+    function cycleState(r, c) {
       const states = ['absent', 'present', 'correct'];
-      const currentState = boardState[row][col].state;
-      const nextIndex = (states.indexOf(currentState) + 1) % states.length;
-      
-      boardState[row][col] = {
-        ...boardState[row][col],
-        state: states[nextIndex]
-      };
-      renderBoard();
+      const nextIndex = (states.indexOf(boardData[r][c].state) + 1) % states.length;
+      boardData[r][c] = { ...boardData[r][c], state: states[nextIndex] };
+      render();
     }
 
-    function setRowWord(row, word) {
+    function setRow(r, word) {
       for (let c = 0; c < 5; c++) {
-        boardState[row][c] = { char: word[c], state: 'absent' };
+        boardData[r][c] = { char: word[c], state: 'absent' };
       }
-      renderBoard();
+      render();
     }
 
-    function processCurrentTurn() {
+    function processTurn() {
       if (currentTurn >= 6) return;
 
-      const currentGuessWord = boardState[currentTurn].map(t => t.char).join("");
-      const feedbackPattern = boardState[currentTurn].map(t => t.state);
+      const guess = boardData[currentTurn].map(t => t.char).join("");
+      const pattern = boardData[currentTurn].map(t => t.state);
 
-      // Filter remaining words based on feedback
-      possibleCandidates = possibleCandidates.filter(candidate => {
-        return matchesPattern(currentGuessWord, candidate, feedbackPattern);
-      });
+      // Filter word pool against user feedback
+      candidates = candidates.filter(w => checkPattern(guess, w, pattern));
 
       currentTurn++;
       turnNumEl.textContent = currentTurn + 1;
 
-      if (possibleCandidates.length === 0) {
+      if (candidates.length === 0) {
         bestWordEl.textContent = "-----";
-        statsTextEl.textContent = "No matching words found in dictionary pool.";
+        statsTextEl.textContent = "No candidate matches remaining.";
         return;
       }
 
-      // Compute entropy recommendation for next turn
-      const nextWord = computeBestEntropyWord();
+      // Compute next guess
+      const nextWord = candidates[0] || DEFAULT_STARTING_WORD;
       bestWordEl.textContent = nextWord;
-      statsTextEl.textContent = `Remaining Candidates: ${possibleCandidates.length}`;
+      statsTextEl.textContent = `Remaining Candidates: ${candidates.length}`;
 
       if (currentTurn < 6) {
-        setRowWord(currentTurn, nextWord);
+        setRow(currentTurn, nextWord);
       }
     }
 
-    function matchesPattern(guess, candidate, pattern) {
-      const candidateArr = candidate.split("");
-      
-      // Correct (Green) Pass
+    function checkPattern(guess, word, pattern) {
+      const arr = word.split("");
+
+      // 1. Check Greens
       for (let i = 0; i < 5; i++) {
         if (pattern[i] === "correct") {
-          if (guess[i] !== candidateArr[i]) return false;
-          candidateArr[i] = null;
+          if (guess[i] !== arr[i]) return false;
+          arr[i] = null;
         }
       }
 
-      // Present (Yellow) & Absent (Gray) Pass
+      // 2. Check Yellows & Grays
       for (let i = 0; i < 5; i++) {
         if (pattern[i] === "present") {
-          if (guess[i] === candidate[i] || !candidateArr.includes(guess[i])) return false;
-          candidateArr[candidateArr.indexOf(guess[i])] = null;
+          if (guess[i] === word[i] || !arr.includes(guess[i])) return false;
+          arr[arr.indexOf(guess[i])] = null;
         } else if (pattern[i] === "absent") {
-          if (candidateArr.includes(guess[i])) return false;
+          if (arr.includes(guess[i])) return false;
         }
       }
 
       return true;
     }
 
-    function computeBestEntropyWord() {
-      if (possibleCandidates.length <= 2) return possibleCandidates[0];
-      
-      // Return highest entropy candidate
-      return possibleCandidates[Math.floor(Math.random() * possibleCandidates.length)];
-    }
-
     function resetSolver() {
-      possibleCandidates = [...DICTIONARY];
+      candidates = [...DICTIONARY];
       currentTurn = 0;
-      boardState = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
+      boardData = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
 
       turnNumEl.textContent = "1";
-      bestWordEl.textContent = DEFAULT_STARTING_WORD; // ALWAYS SALET
-      statsTextEl.textContent = "Initial Optimal Opening Word (~4.88 Bits)";
+      bestWordEl.textContent = DEFAULT_STARTING_WORD; // Fixed default
+      statsTextEl.textContent = "Default Opening Word (~4.88 Bits)";
 
-      setRowWord(0, DEFAULT_STARTING_WORD);
+      setRow(0, DEFAULT_STARTING_WORD);
     }
 
-    // Initialize Page with SALET on Row 1
+    // Initialize layout with SALET on Row 1
     resetSolver();
   </script>
 </body>
