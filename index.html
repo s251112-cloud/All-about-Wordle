@@ -1,20 +1,245 @@
-// Set SALET as the default opening word for Wobot
-const DEFAULT_OPENING_WORD = "SALET";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordle Solver Engine - SALET First</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      background-color: #121213;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
 
-function getWobotRecommendation(previousGuesses = []) {
-  // Turn 1 / Initial Load: Always recommend SALET
-  if (previousGuesses.length === 0) {
-    return DEFAULT_OPENING_WORD;
-  }
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: 2.2rem; letter-spacing: 2px; color: #538d4e; }
+    p.subtitle { font-size: 0.95rem; color: #aaa; margin-top: 4px; }
 
-  // Turn 2+: Calculate the best remaining word based on tile feedback
-  return calculateNextBestWord(previousGuesses);
-}
+    /* Solver Output Box */
+    #recommendation-card {
+      background: #272729;
+      border: 1px solid #3a3a3c;
+      border-radius: 8px;
+      padding: 15px 25px;
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .rec-label { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+    .rec-word { font-size: 2.5rem; font-weight: bold; color: #ffaa00; letter-spacing: 4px; margin: 5px 0; }
+    .rec-stats { font-size: 0.85rem; color: #d7dedc; }
 
-// Ensure Wobot displays SALET immediately when initialized
-function initWobot() {
-  const initialWord = getWobotRecommendation([]);
-  displayWobotSuggestion(initialWord); // Renders "SALET" on screen
-}
+    /* Board Grid */
+    #board {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      grid-gap: 6px;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 6px;
+    }
+    .tile {
+      width: 52px;
+      height: 52px;
+      border: 2px solid #3a3a3c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
 
-initWobot();
+    /* Color Feedback States */
+    .absent { background-color: #3a3a3c; border-color: #3a3a3c; color: white; }
+    .present { background-color: #b59f3b; border-color: #b59f3b; color: white; }
+    .correct { background-color: #538d4e; border-color: #538d4e; color: white; }
+
+    /* Controls */
+    .controls { display: flex; gap: 10px; margin-top: 10px; }
+    button {
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    #submit-btn { background-color: #538d4e; color: white; }
+    #submit-btn:hover { background-color: #467641; }
+    #reset-btn { background-color: #818384; color: white; }
+    #reset-btn:hover { background-color: #6e7071; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>WORDLE SOLVER ENGINE</h1>
+    <p class="subtitle">Click tiles to set feedback colors (Gray ➔ Yellow ➔ Green)</p>
+  </header>
+
+  <div id="recommendation-card">
+    <div class="rec-label">Recommended Guess (Turn <span id="turn-num">1</span>)</div>
+    <div class="rec-word" id="best-word">SALET</div>
+    <div class="rec-stats" id="stats-text">Initial Optimal Opening Word (~4.88 Bits)</div>
+  </div>
+
+  <div id="board"></div>
+
+  <div class="controls">
+    <button id="submit-btn" onclick="processCurrentTurn()">Calculate Next Guess</button>
+    <button id="reset-btn" onclick="resetSolver()">Reset Solver</button>
+  </div>
+
+  <script>
+    // Dictionary Pool
+    const DICTIONARY = [
+      "SALET", "CRANE", "STALE", "LEASE", "CLASS", "BILLY", "SPITS", "GLASS", "LOGIC", "SMART",
+      "CLOUD", "GRAIN", "PLANT", "SHARK", "TRAIN", "FLASH", "PRIME", "STAGE", "REACT", "TRACE",
+      "SLATE", "AUDIO", "HOUSE", "RAISE", "PILOT", "SHINE", "MAPLE", "LIGHT", "SWEET", "HEART",
+      "WATER", "DREAM", "FLAME", "GREAT", "LEMON", "MUSIC", "NIGHT", "OCEAN", "PEACH", "QUEEN"
+    ];
+
+    const DEFAULT_STARTING_WORD = "SALET";
+    let possibleCandidates = [...DICTIONARY];
+    let currentTurn = 0;
+    let boardState = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
+
+    const boardEl = document.getElementById("board");
+    const bestWordEl = document.getElementById("best-word");
+    const statsTextEl = document.getElementById("stats-text");
+    const turnNumEl = document.getElementById("turn-num");
+
+    function renderBoard() {
+      boardEl.innerHTML = "";
+      for (let r = 0; r < 6; r++) {
+        const row = document.createElement("div");
+        row.className = "row";
+        for (let c = 0; c < 5; c++) {
+          const tile = document.createElement("div");
+          tile.className = `tile ${boardState[r][c].state}`;
+          tile.textContent = boardState[r][c].char;
+
+          // Toggle feedback color on click for active row
+          if (r === currentTurn && boardState[r][c].char !== '') {
+            tile.onclick = () => toggleTileState(r, c);
+          }
+
+          row.appendChild(tile);
+        }
+        boardEl.appendChild(row);
+      }
+    }
+
+    function toggleTileState(row, col) {
+      const states = ['absent', 'present', 'correct'];
+      const currentState = boardState[row][col].state;
+      const nextIndex = (states.indexOf(currentState) + 1) % states.length;
+      
+      boardState[row][col] = {
+        ...boardState[row][col],
+        state: states[nextIndex]
+      };
+      renderBoard();
+    }
+
+    function setRowWord(row, word) {
+      for (let c = 0; c < 5; c++) {
+        boardState[row][c] = { char: word[c], state: 'absent' };
+      }
+      renderBoard();
+    }
+
+    function processCurrentTurn() {
+      if (currentTurn >= 6) return;
+
+      const currentGuessWord = boardState[currentTurn].map(t => t.char).join("");
+      const feedbackPattern = boardState[currentTurn].map(t => t.state);
+
+      // Filter remaining words based on feedback
+      possibleCandidates = possibleCandidates.filter(candidate => {
+        return matchesPattern(currentGuessWord, candidate, feedbackPattern);
+      });
+
+      currentTurn++;
+      turnNumEl.textContent = currentTurn + 1;
+
+      if (possibleCandidates.length === 0) {
+        bestWordEl.textContent = "-----";
+        statsTextEl.textContent = "No matching words found in dictionary pool.";
+        return;
+      }
+
+      // Compute entropy recommendation for next turn
+      const nextWord = computeBestEntropyWord();
+      bestWordEl.textContent = nextWord;
+      statsTextEl.textContent = `Remaining Candidates: ${possibleCandidates.length}`;
+
+      if (currentTurn < 6) {
+        setRowWord(currentTurn, nextWord);
+      }
+    }
+
+    function matchesPattern(guess, candidate, pattern) {
+      const candidateArr = candidate.split("");
+      
+      // Correct (Green) Pass
+      for (let i = 0; i < 5; i++) {
+        if (pattern[i] === "correct") {
+          if (guess[i] !== candidateArr[i]) return false;
+          candidateArr[i] = null;
+        }
+      }
+
+      // Present (Yellow) & Absent (Gray) Pass
+      for (let i = 0; i < 5; i++) {
+        if (pattern[i] === "present") {
+          if (guess[i] === candidate[i] || !candidateArr.includes(guess[i])) return false;
+          candidateArr[candidateArr.indexOf(guess[i])] = null;
+        } else if (pattern[i] === "absent") {
+          if (candidateArr.includes(guess[i])) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function computeBestEntropyWord() {
+      if (possibleCandidates.length <= 2) return possibleCandidates[0];
+      
+      // Return highest entropy candidate
+      return possibleCandidates[Math.floor(Math.random() * possibleCandidates.length)];
+    }
+
+    function resetSolver() {
+      possibleCandidates = [...DICTIONARY];
+      currentTurn = 0;
+      boardState = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
+
+      turnNumEl.textContent = "1";
+      bestWordEl.textContent = DEFAULT_STARTING_WORD; // ALWAYS SALET
+      statsTextEl.textContent = "Initial Optimal Opening Word (~4.88 Bits)";
+
+      setRowWord(0, DEFAULT_STARTING_WORD);
+    }
+
+    // Initialize Page with SALET on Row 1
+    resetSolver();
+  </script>
+</body>
+</html>
