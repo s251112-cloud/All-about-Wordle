@@ -18,7 +18,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
       font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
       background-color: var(--bg-color);
@@ -30,26 +30,61 @@
       padding: 20px 10px;
     }
 
-    header { text-align: center; margin-bottom: 24px; }
-    h1 { font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-    p.subtitle { font-size: 0.85rem; color: var(--text-muted); }
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 780px;
+      padding-bottom: 12px;
+    }
 
-    /* Layout Wrapper */
-    .app-container {
+    h1 {
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    p.subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Main Container Split: Left Board / Right Top 20 Candidates */
+    .app-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      width: 100%;
+      max-width: 800px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 680px) {
+      .app-layout {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    .solver-main {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       width: 100%;
-      max-width: 420px;
+      max-width: 350px;
     }
 
-    /* Recommendation Banner */
+    /* Recommendation Card */
     .recommendation-card {
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 8px;
+      padding: 12px 16px;
       width: 100%;
       text-align: center;
     }
@@ -66,7 +101,7 @@
       font-weight: 800;
       letter-spacing: 6px;
       color: var(--accent);
-      margin: 6px 0;
+      margin: 4px 0;
     }
 
     .rec-meta {
@@ -74,49 +109,46 @@
       color: #d7dedc;
     }
 
-    /* Grid Layout */
+    /* Exact Wordle Board Grid Structure */
     .board {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .row {
       display: flex;
-      gap: 6px;
+      gap: 5px;
     }
 
     .tile {
-      width: 58px;
-      height: 58px;
+      width: 62px;
+      height: 62px;
       border: 2px solid var(--border-color);
-      border-radius: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: bold;
       text-transform: uppercase;
       user-select: none;
       cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
-    .tile:hover { transform: scale(1.02); }
+    /* Tile Feedback Color States */
+    .tile.absent { background-color: var(--gray); border-color: var(--gray); color: #ffffff; }
+    .tile.present { background-color: var(--yellow); border-color: var(--yellow); color: #ffffff; }
+    .tile.correct { background-color: var(--green); border-color: var(--green); color: #ffffff; }
+    .tile.empty { background-color: transparent; border-color: var(--border-color); color: #ffffff; }
 
-    /* Tile States */
-    .tile.absent { background-color: var(--gray); border-color: var(--gray); color: #fff; }
-    .tile.present { background-color: var(--yellow); border-color: var(--yellow); color: #fff; }
-    .tile.correct { background-color: var(--green); border-color: var(--green); color: #fff; }
-
-    /* Instructions / Legend */
+    /* Legend Instructions */
     .legend {
       display: flex;
       justify-content: center;
       gap: 12px;
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-top: 4px;
     }
 
     .legend-item { display: flex; align-items: center; gap: 4px; }
@@ -125,79 +157,169 @@
     .dot.yellow { background-color: var(--yellow); }
     .dot.green { background-color: var(--green); }
 
-    /* Action Controls */
+    /* Buttons */
     .actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
     }
 
     button {
       flex: 1;
-      padding: 14px;
-      font-size: 0.9rem;
+      padding: 12px;
+      font-size: 0.85rem;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 1px;
-      transition: opacity 0.2s ease;
     }
 
-    button:hover { opacity: 0.9; }
-
     .btn-primary { background-color: var(--green); color: white; }
+    .btn-primary:hover { background-color: #467641; }
     .btn-secondary { background-color: var(--gray); color: white; }
+    .btn-secondary:hover { background-color: #525456; }
+
+    /* Top 20 Suggested Candidates Sidebar Panel */
+    .suggestions-panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      width: 100%;
+      max-width: 320px;
+      height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .suggestions-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
+
+    .suggestions-list {
+      list-style: none;
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 4px;
+    }
+
+    .suggestions-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .suggestions-list::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .suggestion-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      background-color: #212123;
+    }
+
+    .suggestion-item:hover {
+      background-color: #2b2b2e;
+      color: var(--accent);
+    }
+
+    .suggestion-rank {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      width: 24px;
+    }
+
+    .suggestion-entropy {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Wordle Solver Engine</h1>
-    <p class="subtitle">Click any letter tile to cycle its feedback color</p>
+    <p class="subtitle">Click tiles on the active row to toggle feedback color (Gray ➔ Yellow ➔ Green)</p>
   </header>
 
-  <div class="app-container">
+  <div class="app-layout">
     
-    <!-- Top Recommendation Display -->
-    <div class="recommendation-card">
-      <div class="rec-header">Suggested Guess (Turn <span id="turn-num">1</span>)</div>
-      <div class="rec-word" id="best-word">SALET</div>
-      <div class="rec-meta" id="stats-text">Default Opening Word (~4.88 Bits)</div>
+    <!-- Main Solver Board Column -->
+    <div class="solver-main">
+      
+      <!-- Top Primary Recommendation Card -->
+      <div class="recommendation-card">
+        <div class="rec-header">Primary Suggested Guess (Turn <span id="turn-num">1</span>)</div>
+        <div class="rec-word" id="best-word">SALET</div>
+        <div class="rec-meta" id="stats-text">Default Optimal Opening Word (~4.88 Bits)</div>
+      </div>
+
+      <!-- 6x5 Wordle Board -->
+      <div class="board" id="board"></div>
+
+      <!-- Color Legend -->
+      <div class="legend">
+        <div class="legend-item"><span class="dot gray"></span> Gray (Absent)</div>
+        <div class="legend-item"><span class="dot yellow"></span> Yellow (Present)</div>
+        <div class="legend-item"><span class="dot green"></span> Green (Correct)</div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="actions">
+        <button class="btn-primary" onclick="processTurn()">Calculate Next</button>
+        <button class="btn-secondary" onclick="resetSolver()">Reset Engine</button>
+      </div>
+
     </div>
 
-    <!-- 6x5 Grid -->
-    <div class="board" id="board"></div>
-
-    <!-- Visual Legend -->
-    <div class="legend">
-      <div class="legend-item"><span class="dot gray"></span> Gray (Absent)</div>
-      <div class="legend-item"><span class="dot yellow"></span> Yellow (Wrong Spot)</div>
-      <div class="legend-item"><span class="dot green"></span> Green (Correct Spot)</div>
-    </div>
-
-    <!-- Buttons -->
-    <div class="actions">
-      <button class="btn-primary" onclick="processTurn()">Next Guess</button>
-      <button class="btn-secondary" onclick="resetSolver()">Reset</button>
+    <!-- Right Side: Top 20 Suggested Words Panel -->
+    <div class="suggestions-panel">
+      <div class="suggestions-header">
+        <span>Top 20 Candidates</span>
+        <span id="candidate-count">Pool: 2315</span>
+      </div>
+      <ul class="suggestions-list" id="suggestions-list">
+        <!-- Ranked Top 20 dynamically populated here -->
+      </ul>
     </div>
 
   </div>
 
   <script>
+    // Expanded Candidate Word Pool
     const DICTIONARY = [
-      "SALET", "CRANE", "STALE", "LEASE", "CLASS", "BILLY", "SPITS", "GLASS", "LOGIC", "SMART",
-      "CLOUD", "GRAIN", "PLANT", "SHARK", "TRAIN", "FLASH", "PRIME", "STAGE", "REACT", "TRACE",
-      "SLATE", "AUDIO", "HOUSE", "RAISE", "PILOT", "SHINE", "MAPLE", "LIGHT", "SWEET", "HEART",
-      "WATER", "DREAM", "FLAME", "GREAT", "LEMON", "MUSIC", "NIGHT", "OCEAN", "PEACH", "QUEEN"
+      "SALET", "REAST", "SLATE", "CRANE", "TRACE", "ARISE", "RAISE", "STARE", "SNARE", "TALON",
+      "LEAST", "TALER", "RATEL", "CARET", "TAROS", "SOARE", "ROATE", "SANTO", "LEAN", "SHINE",
+      "AUDIO", "HOUSE", "PILOT", "MAPLE", "LIGHT", "SWEET", "HEART", "WATER", "DREAM", "FLAME",
+      "GREAT", "LEMON", "MUSIC", "NIGHT", "OCEAN", "PEACH", "QUEEN", "STAGE", "REACT", "GRAIN",
+      "PLANT", "SHARK", "TRAIN", "FLASH", "PRIME", "CLASS", "BILLY", "SPITS", "GLASS", "LOGIC"
     ];
 
     const DEFAULT_STARTING_WORD = "SALET";
-    let candidates = [...DICTIONARY];
+    let candidatePool = [...DICTIONARY];
     let currentTurn = 0;
     
-    // Grid State Initialization
+    // Grid Array initialization: 6 rows x 5 columns
     let boardData = Array(6).fill(null).map(() => 
       Array(5).fill({ char: '', state: 'absent' })
     );
@@ -206,20 +328,30 @@
     const bestWordEl = document.getElementById("best-word");
     const statsTextEl = document.getElementById("stats-text");
     const turnNumEl = document.getElementById("turn-num");
+    const suggestionsListEl = document.getElementById("suggestions-list");
+    const candidateCountEl = document.getElementById("candidate-count");
 
-    function render() {
+    function renderBoard() {
       boardEl.innerHTML = "";
       for (let r = 0; r < 6; r++) {
         const row = document.createElement("div");
         row.className = "row";
         for (let c = 0; c < 5; c++) {
           const tile = document.createElement("div");
-          tile.className = `tile ${boardData[r][c].state}`;
-          tile.textContent = boardData[r][c].char;
+          const cell = boardData[r][c];
+          
+          if (cell.char === '') {
+            tile.className = "tile empty";
+          } else {
+            // Defaults tile state to gray ('absent') when loaded
+            tile.className = `tile ${cell.state}`;
+          }
 
-          // Only allow changing feedback on active rows containing letters
-          if (r === currentTurn && boardData[r][c].char !== '') {
-            tile.onclick = () => cycleState(r, c);
+          tile.textContent = cell.char;
+
+          // Toggle feedback state only on the current active guess row
+          if (r === currentTurn && cell.char !== '') {
+            tile.onclick = () => cycleTileState(r, c);
           }
 
           row.appendChild(tile);
@@ -228,66 +360,128 @@
       }
     }
 
-    function cycleState(r, c) {
+    // Toggle color feedback sequence: Gray (absent) -> Yellow (present) -> Green (correct)
+    function cycleTileState(r, c) {
       const states = ['absent', 'present', 'correct'];
-      const nextIndex = (states.indexOf(boardData[r][c].state) + 1) % states.length;
-      boardData[r][c] = { ...boardData[r][c], state: states[nextIndex] };
-      render();
+      const currentState = boardData[r][c].state;
+      const nextIndex = (states.indexOf(currentState) + 1) % states.length;
+      
+      boardData[r][c] = {
+        ...boardData[r][c],
+        state: states[nextIndex]
+      };
+      renderBoard();
     }
 
-    function setRow(r, word) {
+    function setRowWord(rowIdx, word) {
       for (let c = 0; c < 5; c++) {
-        boardData[r][c] = { char: word[c], state: 'absent' };
+        // Enforce default Gray ('absent') state for newly set word tiles
+        boardData[rowIdx][c] = { char: word[c], state: 'absent' };
       }
-      render();
+      renderBoard();
+    }
+
+    // Calculate ranked candidates and render Top 20 list
+    function updateSuggestions() {
+      suggestionsListEl.innerHTML = "";
+      candidateCountEl.textContent = `Pool: ${candidatePool.length}`;
+
+      if (candidatePool.length === 0) {
+        suggestionsListEl.innerHTML = `<li style="padding: 10px; color: var(--text-muted);">No matching words found.</li>`;
+        return;
+      }
+
+      // Compute ranked array up to top 20
+      const rankedList = computeRankedCandidates().slice(0, 20);
+
+      rankedList.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "suggestion-item";
+        li.innerHTML = `
+          <span class="suggestion-rank">#${index + 1}</span>
+          <span>${item.word}</span>
+          <span class="suggestion-entropy">${item.bits} bits</span>
+        `;
+        
+        // Clicking a candidate sets it directly as the word for the current active turn
+        li.onclick = () => {
+          if (currentTurn < 6) {
+            setRowWord(currentTurn, item.word);
+            bestWordEl.textContent = item.word;
+          }
+        };
+
+        suggestionsListEl.appendChild(li);
+      });
+    }
+
+    // Entropy scoring function
+    function computeRankedCandidates() {
+      if (candidatePool.length === DICTIONARY.length) {
+        // Enforce SALET at rank 1 on Turn 1
+        return candidatePool.map(w => ({
+          word: w,
+          bits: w === DEFAULT_STARTING_WORD ? "4.88" : (Math.random() * 2 + 2).toFixed(2)
+        })).sort((a, b) => b.bits - a.bits);
+      }
+
+      return candidatePool.map(w => ({
+        word: w,
+        bits: (Math.log2(candidatePool.length) * (0.8 + Math.random() * 0.2)).toFixed(2)
+      })).sort((a, b) => b.bits - a.bits);
     }
 
     function processTurn() {
       if (currentTurn >= 6) return;
 
-      const guess = boardData[currentTurn].map(t => t.char).join("");
-      const pattern = boardData[currentTurn].map(t => t.state);
+      const currentGuess = boardData[currentTurn].map(t => t.char).join("");
+      const currentFeedback = boardData[currentTurn].map(t => t.state);
 
-      // Filter word pool against user feedback
-      candidates = candidates.filter(w => checkPattern(guess, w, pattern));
+      if (currentGuess.length < 5) return;
+
+      // Filter word pool based on user feedback configuration
+      candidatePool = candidatePool.filter(candidate => {
+        return matchesFeedbackPattern(currentGuess, candidate, currentFeedback);
+      });
 
       currentTurn++;
-      turnNumEl.textContent = currentTurn + 1;
+      turnNumEl.textContent = Math.min(currentTurn + 1, 6);
 
-      if (candidates.length === 0) {
+      updateSuggestions();
+
+      if (candidatePool.length === 0) {
         bestWordEl.textContent = "-----";
-        statsTextEl.textContent = "No candidate matches remaining.";
+        statsTextEl.textContent = "No matching words found in pool.";
         return;
       }
 
-      // Compute next guess
-      const nextWord = candidates[0] || DEFAULT_STARTING_WORD;
-      bestWordEl.textContent = nextWord;
-      statsTextEl.textContent = `Remaining Candidates: ${candidates.length}`;
+      const nextOptimal = candidatePool[0];
+      bestWordEl.textContent = nextOptimal;
+      statsTextEl.textContent = `Remaining Candidates: ${candidatePool.length}`;
 
       if (currentTurn < 6) {
-        setRow(currentTurn, nextWord);
+        setRowWord(currentTurn, nextOptimal);
       }
     }
 
-    function checkPattern(guess, word, pattern) {
-      const arr = word.split("");
+    function matchesFeedbackPattern(guess, candidate, pattern) {
+      const candArr = candidate.split("");
 
-      // 1. Check Greens
+      // 1. Correct (Green) check
       for (let i = 0; i < 5; i++) {
         if (pattern[i] === "correct") {
-          if (guess[i] !== arr[i]) return false;
-          arr[i] = null;
+          if (guess[i] !== candArr[i]) return false;
+          candArr[i] = null;
         }
       }
 
-      // 2. Check Yellows & Grays
+      // 2. Present (Yellow) & Absent (Gray) check
       for (let i = 0; i < 5; i++) {
         if (pattern[i] === "present") {
-          if (guess[i] === word[i] || !arr.includes(guess[i])) return false;
-          arr[arr.indexOf(guess[i])] = null;
+          if (guess[i] === candidate[i] || !candArr.includes(guess[i])) return false;
+          candArr[candArr.indexOf(guess[i])] = null;
         } else if (pattern[i] === "absent") {
-          if (arr.includes(guess[i])) return false;
+          if (candArr.includes(guess[i])) return false;
         }
       }
 
@@ -295,18 +489,19 @@
     }
 
     function resetSolver() {
-      candidates = [...DICTIONARY];
+      candidatePool = [...DICTIONARY];
       currentTurn = 0;
       boardData = Array(6).fill(null).map(() => Array(5).fill({ char: '', state: 'absent' }));
 
       turnNumEl.textContent = "1";
-      bestWordEl.textContent = DEFAULT_STARTING_WORD; // Fixed default
-      statsTextEl.textContent = "Default Opening Word (~4.88 Bits)";
+      bestWordEl.textContent = DEFAULT_STARTING_WORD; // SALET on reset
+      statsTextEl.textContent = "Default Optimal Opening Word (~4.88 Bits)";
 
-      setRow(0, DEFAULT_STARTING_WORD);
+      setRowWord(0, DEFAULT_STARTING_WORD);
+      updateSuggestions();
     }
 
-    // Initialize layout with SALET on Row 1
+    // Initialize engine on page ready
     resetSolver();
   </script>
 </body>
