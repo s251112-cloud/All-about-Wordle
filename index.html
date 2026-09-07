@@ -172,7 +172,9 @@
     }
 
     .btn-primary { background-color: var(--green); color: white; }
+    .btn-primary:hover { background-color: #467641; }
     .btn-secondary { background-color: var(--gray); color: white; }
+    .btn-secondary:hover { background-color: #525456; }
 
     /* Top 20 Candidates List */
     .suggestions-panel {
@@ -203,6 +205,7 @@
       list-style: none;
       overflow-y: auto;
       flex-grow: 1;
+      padding-right: 4px;
     }
 
     .suggestion-item {
@@ -273,7 +276,7 @@
       <div class="suggestions-panel">
         <div class="suggestions-header">
           <span>Top 20 Suggestions</span>
-          <span id="candidate-count">Pool: 2315</span>
+          <span id="candidate-count">Pool: 0</span>
         </div>
         <ul class="suggestions-list" id="suggestions-list"></ul>
       </div>
@@ -285,8 +288,8 @@
   <div id="tab-about" class="tab-content">
     <div class="article-container">
       <h2>Why SALET is the Optimal Opening Word</h2>
-      <p>In Information Theory, Wordle words are evaluated by <strong>Shannon Entropy</strong>. "SALET" tests the five most common letters in English Wordle target lists (S, A, L, E, T) across optimal position slots.</p>
-      <p>Playing SALET eliminates an average of ~4.88 bits of uncertainty on Turn 1, narrowing down a pool of over 2,300 words to under 50 potential answers on average.</p>
+      <p>In Information Theory, Wordle words are evaluated by <strong>Shannon Entropy</strong>. "SALET" tests five of the most common letters in English target word lists (S, A, L, E, T) across highly informative position slots.</p>
+      <p>Playing SALET eliminates an average of ~4.88 bits of uncertainty on Turn 1, narrowing down a pool of over 2,300 candidate words down to a fraction of potential answers on average.</p>
     </div>
   </div>
 
@@ -294,7 +297,9 @@
     const DICTIONARY = [
       "SALET", "REAST", "SLATE", "CRANE", "TRACE", "ARISE", "RAISE", "STARE", "SNARE", "TALON",
       "LEAST", "TALER", "RATEL", "CARET", "TAROS", "SOARE", "ROATE", "SANTO", "LEAN", "SHINE",
-      "AUDIO", "HOUSE", "PILOT", "MAPLE", "LIGHT", "SWEET", "HEART", "WATER", "DREAM", "FLAME"
+      "AUDIO", "HOUSE", "PILOT", "MAPLE", "LIGHT", "SWEET", "HEART", "WATER", "DREAM", "FLAME",
+      "GREAT", "LEMON", "MUSIC", "NIGHT", "OCEAN", "PEACH", "QUEEN", "STAGE", "REACT", "GRAIN",
+      "PLANT", "SHARK", "TRAIN", "FLASH", "PRIME", "CLASS", "BILLY", "SPITS", "GLASS", "LOGIC"
     ];
 
     const DEFAULT_STARTING_WORD = "SALET";
@@ -365,11 +370,16 @@
       suggestionsListEl.innerHTML = "";
       candidateCountEl.textContent = `Pool: ${candidatePool.length}`;
 
+      if (candidatePool.length === 0) {
+        suggestionsListEl.innerHTML = `<li style="padding: 10px; color: var(--text-muted);">No matching words.</li>`;
+        return;
+      }
+
       const ranked = candidatePool.slice(0, 20);
       ranked.forEach((w, idx) => {
         const li = document.createElement("li");
         li.className = "suggestion-item";
-        li.innerHTML = `<span>#${idx + 1} ${w}</span><span>4.88 bits</span>`;
+        li.innerHTML = `<span>#${idx + 1} ${w}</span><span style="font-size:0.75rem; color:var(--text-muted);">Candidate</span>`;
         li.onclick = () => {
           if (currentTurn < 6) {
             setRowWord(currentTurn, w);
@@ -382,9 +392,59 @@
 
     function processTurn() {
       if (currentTurn >= 6) return;
+
+      const currentGuess = boardData[currentTurn].map(t => t.char).join("");
+      const currentFeedback = boardData[currentTurn].map(t => t.state);
+
+      if (currentGuess.length < 5) return;
+
+      // Filter remaining words in dictionary based on feedback colors
+      candidatePool = candidatePool.filter(candidate => {
+        return matchesFeedbackPattern(currentGuess, candidate, currentFeedback);
+      });
+
       currentTurn++;
       turnNumEl.textContent = Math.min(currentTurn + 1, 6);
+
       updateSuggestions();
+
+      if (candidatePool.length === 0) {
+        bestWordEl.textContent = "-----";
+        statsTextEl.textContent = "No matching candidate words found in dictionary.";
+        return;
+      }
+
+      const nextOptimalWord = candidatePool[0];
+      bestWordEl.textContent = nextOptimalWord;
+      statsTextEl.textContent = `Remaining Candidates: ${candidatePool.length}`;
+
+      if (currentTurn < 6) {
+        setRowWord(currentTurn, nextOptimalWord);
+      }
+    }
+
+    function matchesFeedbackPattern(guess, candidate, pattern) {
+      const candArr = candidate.split("");
+
+      // 1. Correct (Green) check
+      for (let i = 0; i < 5; i++) {
+        if (pattern[i] === "correct") {
+          if (guess[i] !== candArr[i]) return false;
+          candArr[i] = null;
+        }
+      }
+
+      // 2. Present (Yellow) & Absent (Gray) check
+      for (let i = 0; i < 5; i++) {
+        if (pattern[i] === "present") {
+          if (guess[i] === candidate[i] || !candArr.includes(guess[i])) return false;
+          candArr[candArr.indexOf(guess[i])] = null;
+        } else if (pattern[i] === "absent") {
+          if (candArr.includes(guess[i])) return false;
+        }
+      }
+
+      return true;
     }
 
     function resetSolver() {
@@ -400,6 +460,7 @@
       updateSuggestions();
     }
 
+    // Initialize layout
     resetSolver();
   </script>
 </body>
